@@ -9,6 +9,14 @@ class Blog < ApplicationRecord
 
   scope :published, -> { where('secret = FALSE') }
 
+  scope :allowed_for_unloggedin, lambda { |id|
+    find_by!('id = ? AND secret = FALSE', id)
+  }
+
+  scope :allowed_for_loggedin, lambda { |id, user_id|
+    find_by!('id = ? AND (secret = FALSE OR user_id = ?)', id, user_id)
+  }
+
   scope :search, lambda { |term|
     where('title LIKE ?', "%#{term}%")
       .or(Blog.where('content LIKE ?', "%#{term}%"))
