@@ -10,12 +10,6 @@ class BlogsController < ApplicationController
   end
 
   def show
-    # puts '##################'
-    # puts current_user.id
-    # puts current_user.nickname
-    # puts current_user.blogs[0].user_id
-    # puts Blog.owned(current_user.id)[0].user_id
-    # puts '$$$$$$$$$$$$$$$$$$'
     @blog = if current_user.blank?
               Blog.published.find(params[:id])
             else
