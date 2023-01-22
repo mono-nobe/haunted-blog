@@ -9,8 +9,18 @@ class Blog < ApplicationRecord
 
   scope :published, -> { where('secret = FALSE') }
 
+  scope :owned, lambda { |user_id|
+    where('user_id = ?', user_id)
+  }
+
+  scope :allowed, lambda { |user_id|
+    published.or(owned(user_id))
+  }
+
   scope :search, lambda { |term|
-    where("title LIKE '%#{term}%' OR content LIKE '%#{term}%'")
+    term = '' if term.blank?
+    where('title LIKE ?', "%#{sanitize_sql_like(term)}%")
+      .or(Blog.where('content LIKE ?', "%#{sanitize_sql_like(term)}%"))
   }
 
   scope :default_order, -> { order(id: :desc) }
